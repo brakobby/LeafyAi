@@ -547,6 +547,7 @@
   const webcamResult   = document.getElementById('webcam-result-card');
 
   let stream = null;
+  let captureIntervalId = null;
 
   async function startWebcam() {
     try {
@@ -555,6 +556,8 @@
       webcamStatus.textContent = 'Camera active';
       startBtn.style.display = 'none';
       stopBtn.style.display = 'inline-block';
+      // Start periodic capture every 1500ms
+      if (!captureIntervalId) captureIntervalId = setInterval(captureAndSendFrame, 1500);
     } catch (err) {
       webcamStatus.textContent = 'Camera access failed';
       alert('Cannot access camera: ' + err.message);
@@ -570,6 +573,73 @@
     webcamStatus.textContent = 'Camera off';
     startBtn.style.display = 'inline-block';
     stopBtn.style.display = 'none';
+    if (captureIntervalId) {
+      clearInterval(captureIntervalId);
+      captureIntervalId = null;
+    }
+  }
+
+  // Capture a frame from the video, resize to 224x224, and send to server
+  async function captureAndSendFrame() {
+    if (!stream) return;
+    try {
+      const canvas = document.getElementById('capture-canvas');
+      const ctx = canvas.getContext('2d');
+      const W = 224, H = 224;
+      canvas.width = W; canvas.height = H;
+      ctx.drawImage(video, 0, 0, W, H);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+
+      webcamStatus.textContent = 'Analyzing...';
+
+      const res = await fetch('/predict/webcam/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: JSON.stringify({ image: dataUrl })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        renderWebcamResult(data.result);
+      } else {
+        webcamResult.innerHTML = '<p style="color:#c53030;">Error — try again</p>';
+      }
+    } catch (err) {
+      webcamResult.innerHTML = '<p style="color:#c53030;">Connection failed</p>';
+    } finally {
+      if (stream) webcamStatus.textContent = 'Camera active';
+    }
+  }
+
+  function renderWebcamResult(r) {
+    const lowConfidence = r.confidence < 50;
+    const probsHtml = r.all_probabilities.map(p => `
+      <div class="prob-row">
+        <div class="prob-name">${p.name}</div>
+        <div class="prob-bar-wrap"><div class="prob-bar" style="width:${p.probability}%;background:${p.color}"></div></div>
+        <div style="width:46px;text-align:right;font-family:'JetBrains Mono', monospace">${p.probability}%</div>
+      </div>
+    `).join('');
+
+    const uncertainNote = lowConfidence ? `<div class="low-confidence">Low confidence — result may be incorrect</div>` : '';
+
+    webcamResult.classList.remove('result-empty');
+    webcamResult.innerHTML = `
+      <div class="result-header">
+        <div class="result-badge" style="background:${r.color}">${r.icon}</div>
+        <div class="result-body">
+          <div class="result-class">${r.class_name}</div>
+          <div class="result-confidence">${r.confidence}% confidence ${r.mock ? '<small style="margin-left:8px;color:var(--muted)">(mock)</small>' : ''}</div>
+          ${uncertainNote}
+          <div class="result-desc">${r.description}</div>
+        </div>
+      </div>
+      <div class="result-action">Suggested action: ${r.action}</div>
+      <div class="probs">${probsHtml}</div>
+    `;
   }
 
   startBtn.addEventListener('click', startWebcam);
