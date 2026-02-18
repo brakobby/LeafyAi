@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tomato Leaf Checker</title>
+  {% load static %}
+  <link rel="icon" href="{% static 'detector/favicon.svg' %}" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  
+  <style>
+    :root {
+      --green:        #16a34a;
+      --green-light:  #dcfce7;
+      --green-dark:   #14532d;
+      --bg:           #f9faf6;
+      --surface:      #ffffff;
+      --border:       #d9e2d0;
+      --text:         #1a2e1a;
+      --muted:        #5f6c5f;
+      --radius:       10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+      font-size: 15px;
+    }
+
+    .header {
+      background: var(--green-dark);
+      color: white;
+      padding: 0 1.5rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+
+    .main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .tab-nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.3rem;
+      width: fit-content;
+    }
+
+    .tab-btn {
+      padding: 0.6rem 1.3rem;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .tab-btn.active {
+      background: var(--green);
+      color: white;
+    }
+
+    .tab-btn:hover:not(.active) {
+      background: var(--green-light);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.8rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    .card-title {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--green-dark);
+      margin-bottom: 0.4rem;
+    }
+
+    .card-sub {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-bottom: 1.4rem;
+    }
+
+    /* Upload */
+    #upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 3rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+      position: relative;
+    }
+
+    #upload-zone:hover,
+    #upload-zone.dragover {
+      border-color: var(--green);
+      background: var(--green-light);
+    }
+
+    #file-input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    #upload-zone h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    #upload-zone p {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .result-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 680px) {
+      .result-row { grid-template-columns: 1fr; }
+    }
+
+    .preview-box {
+      aspect-ratio: 4 / 3;
+      background: #f1f5f9;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .result-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.4rem;
+      min-height: 160px;
+    }
+
+    .result-header { display:flex; align-items:center; gap:1rem; }
+    .result-badge {
+      min-width:72px; height:72px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.05rem;
+      color: white;
+    }
+    .result-body { flex:1 }
+    .result-class { font-size:1.35rem; font-weight:700; margin-bottom:6px }
+    .result-confidence { font-family: 'JetBrains Mono', monospace; color:#444; }
+    .result-desc { margin-top:0.6rem; color:var(--muted); font-size:0.95rem }
+    .result-action { margin-top:0.6rem; background: #f8fafc; padding:0.6rem; border-radius:6px; font-size:0.95rem }
+
+    .probs { margin-top:0.9rem; display:flex; flex-direction:column; gap:0.45rem }
+    .prob-row { display:flex; gap:0.6rem; align-items:center }
+    .prob-name { width:10.5rem; font-size:0.9rem; color:var(--muted) }
+    .prob-bar-wrap { flex:1; background:#f1f5f9; height:10px; border-radius:6px; overflow:hidden }
+    .prob-bar { height:100%; border-radius:6px }
+    .low-confidence { color:#9b1c1c; font-weight:700 }
+
+    .result-empty {
+      background: #f8fafc;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .result-class {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--green-dark);
+    }
+
+    .result-confidence {
+      font-family: 'JetBrains Mono', monospace;
+      color: #444;
+      margin-top: 0.4rem;
+    }
+
+    /* Webcam */
+    .webcam-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 680px) {
+      .webcam-grid { grid-template-columns: 1fr; }
+    }
+
+    .webcam-container {
+      position: relative;
+      background: #000;
+      border-radius: var(--radius);
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+    }
+
+    #webcam-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .webcam-status {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.65);
+      color: white;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.9rem;
+      border-radius: 20px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .webcam-controls {
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 0.6rem 1.3rem;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: white;
+    }
+
+    .btn-primary:hover { background: #13843e; }
+    .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+    .btn-secondary {
+      background: white;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2.5rem 1rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+{% csrf_token %}
+
+<header class="header">
+  <div class="logo">Tomato Leaf Checker</div>
+  <a href="https://plantvillage.psu.edu/" target="_blank" style="color:white; text-decoration:none; font-size:0.95rem;">
+    Jason Omanye Asare
+  </a>
+</header>
+
+<main class="main">
+
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="upload">Upload Image</button>
+    <button class="tab-btn" data-tab="webcam">Webcam</button>
+  </div>
+
+  <!-- ── Upload Tab ─────────────────────────────────────── -->
+  <div class="tab-panel active" id="tab-upload">
+    <div class="card">
+      <div class="card-title">Upload Tomato Leaf Photo</div>
+      <div class="card-sub">Choose a clear photo of a tomato leaf. Plain background works best.</div>
+
+      <div id="upload-zone">
+        <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" />
+        <h3>Click here or drag & drop image</h3>
+        <p>JPEG, PNG, WebP  —  max 5 MB</p>
+      </div>
+
+      <div class="result-row" id="upload-result-row" style="display:none;">
+        <div>
+          <div class="preview-box" id="preview-box">
+            <div style="color:var(--muted);">Image preview</div>
+          </div>
+        </div>
+        <div>
+          <div class="result-card result-empty" id="result-card">
+            <p>Result appears here</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:1.3rem; display:flex; gap:1rem; flex-wrap:wrap;">
+        <button class="btn btn-primary" id="analyze-btn" disabled>Analyze</button>
+        <button class="btn btn-secondary" id="clear-btn" style="display:none;">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Webcam Tab ─────────────────────────────────────── -->
+  <div class="tab-panel" id="tab-webcam">
+    <div class="card">
+      <div class="card-title">Webcam Mode</div>
+      <div class="card-sub">Position leaf 10–15 cm from camera. Use good lighting.</div>
+
+      <div class="webcam-grid">
+        <div>
+          <div class="webcam-container">
+            <video id="webcam-video" autoplay playsinline muted></video>
+            <div class="webcam-status" id="webcam-status">Camera off</div>
+          </div>
+          <div class="webcam-controls">
+            <button class="btn btn-primary" id="start-webcam-btn">Start Camera</button>
+            <button class="btn btn-danger" id="stop-webcam-btn" style="display:none;">Stop Camera</button>
+          </div>
+        </div>
+
+        <div>
+          <div class="result-card result-empty" id="webcam-result-card">
+            <p>Result appears here after starting camera</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <p>Jason Asare | Science Fair Project</p>
+  
+</footer>
+
+<canvas id="capture-canvas" style="display:none;"></canvas>
+
+<script>
+  // ── Helpers ────────────────────────────────────────────────
+  function getCookie(name) {
+    const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return match ? match.pop() : '';
+  }
+
+  // ── Tab Switching ──────────────────────────────────────────
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+
+      if (btn.dataset.tab !== 'webcam') stopWebcam();
+    });
+  });
+
+  // ── Upload Logic ───────────────────────────────────────────
+  const uploadZone     = document.getElementById('upload-zone');
+  const fileInput      = document.getElementById('file-input');
+  const analyzeBtn     = document.getElementById('analyze-btn');
+  const clearBtn       = document.getElementById('clear-btn');
+  const previewBox     = document.getElementById('preview-box');
+  const resultCard     = document.getElementById('result-card');
+  const resultRow      = document.getElementById('upload-result-row');
+
+  let selectedFile = null;
+
+  function handleFile(file) {
+    if (!file || !file.type.startsWith('image/')) {
+      alert('Please select a valid image (JPEG, PNG, WebP)');
+      return;
+    }
+
+    selectedFile = file;
+    analyzeBtn.disabled = false;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      previewBox.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+    };
+    reader.readAsDataURL(file);
+
+    resultRow.style.display = 'grid';
+    clearBtn.style.display = 'inline-block';
+  }
+
+  // Click anywhere in zone opens file dialog
+  uploadZone.addEventListener('click', e => {
+    if (e.target.tagName !== 'INPUT') {
+      fileInput.click();
+    }
+  });
+
+  fileInput.addEventListener('change', e => {
+    if (e.target.files?.[0]) handleFile(e.target.files[0]);
+  });
+
+  // Drag & drop
+  uploadZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    uploadZone.classList.add('dragover');
+  });
+
+  uploadZone.addEventListener('dragleave', () => {
+    uploadZone.classList.remove('dragover');
+  });
+
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    if (e.dataTransfer.files?.[0]) handleFile(e.dataTransfer.files[0]);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    selectedFile = null;
+    fileInput.value = '';
+    analyzeBtn.disabled = true;
+    clearBtn.style.display = 'none';
+    resultRow.style.display = 'none';
+    previewBox.innerHTML = '<div style="color:var(--muted);">Image preview</div>';
+    resultCard.classList.add('result-empty');
+    resultCard.innerHTML = '<p>Result appears here</p>';
+  });
+
+  analyzeBtn.addEventListener('click', async () => {
+    if (!selectedFile) return;
+
+    analyzeBtn.disabled = true;
+    analyzeBtn.textContent = 'Processing...';
+
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+
+    try {
+      const res = await fetch('/predict/upload/', {
+        method: 'POST',
+        headers: { 'X-CSRFToken': getCookie('csrftoken') },
+        body: formData
+      });
+
+      const data = await res.json();
+
+      function renderResult(r) {
+        const lowConfidence = r.confidence < 50;
+        const top = r.all_probabilities[0];
+        const second = r.all_probabilities[1];
+
+        let badgeStyle = `background:${r.color}`;
+
+        const probsHtml = r.all_probabilities.map(p => `
+          <div class="prob-row">
+            <div class="prob-name">${p.name}</div>
+            <div class="prob-bar-wrap"><div class="prob-bar" style="width:${p.probability}%;background:${p.color}"></div></div>
+            <div style="width:46px;text-align:right;font-family:'JetBrains Mono', monospace">${p.probability}%</div>
+          </div>
+        `).join('');
+
+        const uncertainNote = lowConfidence ? `<div class="low-confidence">Low confidence — result may be incorrect</div>` : '';
+
+        resultCard.innerHTML = `
+          <div class="result-header">
+            <div class="result-badge" style="${badgeStyle}">${r.icon}</div>
+            <div class="result-body">
+              <div class="result-class">${r.class_name}</div>
+              <div class="result-confidence">${r.confidence}% confidence ${r.mock ? '<small style="margin-left:8px;color:var(--muted)">(mock)</small>' : ''}</div>
+              ${uncertainNote}
+              <div class="result-desc">${r.description}</div>
+            </div>
+          </div>
+          <div class="result-action">Suggested action: ${r.action}</div>
+          <div class="probs">${probsHtml}</div>
+        `;
+        resultCard.classList.remove('result-empty');
+      }
+
+      if (res.ok && data.success) {
+        renderResult(data.result);
+      } else {
+        resultCard.innerHTML = '<p style="color:#c53030;">Error — try again</p>';
+      }
+    } catch (err) {
+      resultCard.innerHTML = '<p style="color:#c53030;">Connection failed</p>';
+    } finally {
+      analyzeBtn.disabled = false;
+      analyzeBtn.textContent = 'Analyze';
+    }
+  });
+
+  // ── Webcam Logic ───────────────────────────────────────────
+  const video          = document.getElementById('webcam-video');
+  const startBtn       = document.getElementById('start-webcam-btn');
+  const stopBtn        = document.getElementById('stop-webcam-btn');
+  const webcamStatus   = document.getElementById('webcam-status');
+  const webcamResult   = document.getElementById('webcam-result-card');
+
+  let stream = null;
+
+  async function startWebcam() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+      webcamStatus.textContent = 'Camera active';
+      startBtn.style.display = 'none';
+      stopBtn.style.display = 'inline-block';
+    } catch (err) {
+      webcamStatus.textContent = 'Camera access failed';
+      alert('Cannot access camera: ' + err.message);
+    }
+  }
+
+  function stopWebcam() {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      stream = null;
+    }
+    video.srcObject = null;
+    webcamStatus.textContent = 'Camera off';
+    startBtn.style.display = 'inline-block';
+    stopBtn.style.display = 'none';
+  }
+
+  startBtn.addEventListener('click', startWebcam);
+  stopBtn.addEventListener('click', stopWebcam);
+</script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+Watching for file changes with StatReloader
+[14/Feb/2026 01:47:47] "GET / HTTP/1.1" 200 14756
+[14/Feb/2026 01:47:47] "GET /static/detector/favicon.svg HTTP/1.1" 304 0
+[14/Feb/2026 01:47:57] "POST /predict/upload/ HTTP/1.1" 200 596
+[14/Feb/2026 01:48:14] "POST /predict/upload/ HTTP/1.1" 200 597
+[14/Feb/2026 01:51:46] "GET / HTTP/1.1" 200 17119
+[14/Feb/2026 01:51:47] "GET /static/detector/favicon.svg HTTP/1.1" 304 0
+[14/Feb/2026 01:52:12] "POST /predict/upload/ HTTP/1.1" 200 670
+[14/Feb/2026 01:52:42] "POST /predict/upload/ HTTP/1.1" 200 683
+[14/Feb/2026 01:54:52] "GET / HTTP/1.1" 200 17119
+[14/Feb/2026 01:54:52] "GET /static/detector/favicon.svg HTTP/1.1" 304 0
+[14/Feb/2026 01:55:09] "POST /predict/upload/ HTTP/1.1" 200 682
+[14/Feb/2026 01:55:21] "POST /predict/upload/ HTTP/1.1" 200 596
+[14/Feb/2026 01:55:26] "POST /predict/upload/ HTTP/1.1" 200 595
+[14/Feb/2026 01:55:27] "POST /predict/upload/ HTTP/1.1" 200 662
+[14/Feb/2026 01:55:33] "POST /predict/upload/ HTTP/1.1" 200 662
+[14/Feb/2026 01:55:36] "POST /predict/upload/ HTTP/1.1" 200 684
+[14/Feb/2026 01:55:39] "POST /predict/upload/ HTTP/1.1" 200 682
+/home/doit/Desktop/Projects/leafguard_ai/leafguard/detector/ml_inference.py changed, reloading.
+Performing system checks...
+
+System check identified no issues (0 silenced).
+February 14, 2026 - 01:47:45
+Django version 4.2.28, using settings 'leafguard.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+
+Watching for file changes with StatReloader
+[14/Feb/2026 01:59:07] "GET / HTTP/1.1" 200 17119
+[14/Feb/2026 01:59:07] "GET /static/detector/favicon.svg HTTP/1.1" 200 265
+[14/Feb/2026 01:59:14] "GET / HTTP/1.1" 200 17119
+[14/Feb/2026 01:59:14] "GET /static/detector/favicon.svg HTTP/1.1" 304 0
+[14/Feb/2026 01:59:20] "POST /predict/upload/ HTTP/1.1" 200 663
+[14/Feb/2026 01:59:28] "POST /predict/upload/ HTTP/1.1" 200 684
+[14/Feb/2026 01:59:36] "POST /predict/upload/ HTTP/1.1" 200 684
+[14/Feb/2026 01:59:40] "POST /predict/upload/ HTTP/1.1" 200 662
+[14/Feb/2026 01:59:44] "POST /predict/upload/ HTTP/1.1" 200 663
+[14/Feb/2026 01:59:48] "POST /predict/upload/ HTTP/1.1" 200 669
+[14/Feb/2026 02:01:00] "POST /predict/upload/ HTTP/1.1" 200 596
+[14/Feb/2026 02:01:04] "POST /predict/upload/ HTTP/1.1" 200 595
+[14/Feb/2026 02:01:05] "POST /predict/upload/ HTTP/1.1" 200 684
+[14/Feb/2026 02:01:08] "POST /predict/upload/ HTTP/1.1" 200 669
+[14/Feb/2026 02:01:33] "POST /predict/upload/ HTTP/1.1" 200 596
+[14/Feb/2026 02:01:34] "POST /predict/upload/ HTTP/1.1" 200 669
+[14/Feb/2026 02:01:36] "POST /predict/upload/ HTTP/1.1" 200 669
+[14/Feb/2026 02:01:37] "POST /predict/upload/ HTTP/1.1" 200 662
+[14/Feb/2026 02:01:54] "POST /predict/upload/ HTTP/1.1" 200 682
+[14/Feb/2026 02:02:12] "POST /predict/upload/ HTTP/1.1" 200 596
+[14/Feb/2026 02:02:16] "GET / HTTP/1.1" 200 17119
+[14/Feb/2026 02:02:16] "GET /static/detector/favicon.svg HTTP/1.1" 304 0
+[14/Feb/2026 02:02:26] "POST /predict/upload/ HTTP/1.1" 200 668
+[14/Feb/2026 02:02:28] "POST /predict/upload/ HTTP/1.1" 200 661
+[14/Feb/2026 02:02:31] "POST /predict/upload/ HTTP/1.1" 200 682
+[14/Feb/2026 02:02:37] "POST /predict/upload/ HTTP/1.1" 200 597
+[14/Feb/2026 02:02:38] "POST /predict/upload/ HTTP/1.1" 200 683
+[14/Feb/2026 02:02:39] "POST /predict/upload/ HTTP/1.1" 200 669
+[14/Feb/2026 02:02:49] "POST /predict/upload/ HTTP/1.1" 200 662
+[14/Feb/2026 02:02:53] "POST /predict/upload/ HTTP/1.1" 200 668
+[14/Feb/2026 02:02:57] "POST /predict/upload/ HTTP/1.1" 200 662
+[14/Feb/2026 02:02:59] "POST /predict/upload/ HTTP/1.1" 200 661
+[14/Feb/2026 02:03:02] "POST /predict/upload/ HTTP/1.1" 200 596
+[14/Feb/2026 02:03:03] "POST /predict/upload/ HTTP/1.1" 200 669
+[14/Feb/2026 02:03:05] "POST /predict/upload/ HTTP/1.1" 200 595
+[14/Feb/2026 02:03:07] "POST /predict/upload/ HTTP/1.1" 200 662
+[14/Feb/2026 02:03:09] "POST /predict/upload/ HTTP/1.1" 200 595
+[14/Feb/2026 02:03:10] "POST /predict/upload/ HTTP/1.1" 200 684
+[14/Feb/2026 02:10:28] "GET / HTTP/1.1" 200 17119
+[14/Feb/2026 02:10:28] "GET /static/detector/favicon.svg HTTP/1.1" 304 0
+[14/Feb/2026 02:10:29] "GET / HTTP/1.1" 200 17119
+[14/Feb/2026 02:10:35] "POST /predict/upload/ HTTP/1.1" 200 596
+[14/Feb/2026 02:10:39] "POST /predict/upload/ HTTP/1.1" 200 595
+[14/Feb/2026 02:10:42] "POST /predict/upload/ HTTP/1.1" 200 683
+[14/Feb/2026 02:13:10] "GET / HTTP/1.1" 200 17018
+[14/Feb/2026 02:13:10] "GET /static/detector/favicon.svg HTTP/1.1" 304 0
+Not Found: /sbout
+[14/Feb/2026 02:13:28] "GET /sbout HTTP/1.1" 404 3099
+[14/Feb/2026 02:13:38] "GET /about HTTP/1.1" 301 0
+[14/Feb/2026 02:13:39] "GET /about/ HTTP/1.1" 200 6871
+[14/Feb/2026 02:14:35] "POST /predict/upload/ HTTP/1.1" 200 682

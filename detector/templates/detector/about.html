@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — LeafGuard AI</title>
+  {% load static %}
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green: #16a34a; --green-light: #dcfce7; --green-dark: #14532d;
+      --accent: #84cc16; --bg: #f8faf5; --border: #e2e8d0;
+      --text: #1a2e1a; --muted: #6b7a6b;
+      --font-display: 'DM Serif Display', serif;
+      --font-body: 'DM Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    body { font-family: var(--font-body); background: var(--bg); color: var(--text); line-height: 1.7; }
+    .header { background: var(--green-dark); color: #fff; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .logo { display: flex; align-items: center; gap: .7rem; text-decoration: none; color: inherit; font-family: var(--font-display); font-size: 1.35rem; }
+    .logo-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo span { color: var(--accent); }
+    .back-btn { color: rgba(255,255,255,.75); text-decoration: none; font-size: .875rem; font-weight: 500; }
+    .main { max-width: 760px; margin: 3rem auto; padding: 0 1.5rem 4rem; }
+    h1 { font-family: var(--font-display); font-size: 2.2rem; margin-bottom: .5rem; color: var(--green-dark); }
+    .subtitle { color: var(--muted); margin-bottom: 2.5rem; }
+    h2 { font-family: var(--font-display); font-size: 1.4rem; margin: 2rem 0 .75rem; color: var(--green-dark); }
+    p { margin-bottom: 1rem; font-size: .95rem; }
+    ul { margin: .5rem 0 1rem 1.2rem; }
+    li { margin-bottom: .4rem; font-size: .95rem; }
+    .arch-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: .875rem; }
+    .arch-table th { background: var(--green-dark); color: #fff; padding: .6rem .9rem; text-align: left; }
+    .arch-table td { padding: .6rem .9rem; border-bottom: 1px solid var(--border); }
+    .arch-table tr:nth-child(even) td { background: var(--green-light); }
+    code { font-family: var(--font-mono); background: var(--green-light); padding: 1px 6px; border-radius: 4px; font-size: .85em; color: var(--green-dark); }
+    .footer { border-top: 1px solid var(--border); text-align: center; padding: 1.5rem; color: var(--muted); font-size: .8rem; }
+  </style>
+</head>
+<body>
+<header class="header">
+  <a href="/" class="logo"><div class="logo-icon">🌿</div> Leaf<span>Guard</span> AI</a>
+  <a href="/" class="back-btn">← Back to App</a>
+</header>
+<main class="main">
+  <h1>About LeafGuard AI</h1>
+  <p class="subtitle">Science Fair Project — Computer Science / Agricultural Technology &nbsp;·&nbsp; Prepared by Nhyira · Feb 2026</p>
+
+  <h2>Project Overview</h2>
+  <p>LeafGuard AI is a desktop web application that uses a custom Convolutional Neural Network (CNN) to classify tomato plant leaves into four health categories in real time. It was developed to address the need for fast, affordable, and offline-capable disease diagnostics for smallholder farmers — particularly in regions like Ghana where crop losses of 20–40% are common due to undetected disease.</p>
+
+  <h2>Disease Classes</h2>
+  <table class="arch-table">
+    <thead><tr><th>Class</th><th>Type</th><th>Key Symptom</th></tr></thead>
+    <tbody>
+      <tr><td>✅ Healthy</td><td>—</td><td>Uniform green coloration, no spots or deformity</td></tr>
+      <tr><td>🟠 Early Blight</td><td>Fungal (<em>A. solani</em>)</td><td>Dark concentric rings, yellowing around lesions</td></tr>
+      <tr><td>🟣 Leaf Mold</td><td>Fungal (<em>P. fulva</em>)</td><td>Yellow upper spots, olive mold on leaf underside</td></tr>
+      <tr><td>🔴 TYLCV</td><td>Viral (whitefly)</td><td>Upward leaf curling, mosaic yellowing, stunted growth</td></tr>
+    </tbody>
+  </table>
+
+  <h2>CNN Architecture</h2>
+  <p>The model is a <strong>custom CNN</strong> — transfer learning was intentionally avoided to demonstrate understanding of neural network fundamentals. Architecture summary:</p>
+  <table class="arch-table">
+    <thead><tr><th>Layer Block</th><th>Filters</th><th>Operation</th></tr></thead>
+    <tbody>
+      <tr><td>Block 1</td><td>32</td><td>Conv2D × 2 → BatchNorm → MaxPool → Dropout(0.25)</td></tr>
+      <tr><td>Block 2</td><td>64</td><td>Conv2D × 2 → BatchNorm → MaxPool → Dropout(0.25)</td></tr>
+      <tr><td>Block 3</td><td>128</td><td>Conv2D × 2 → BatchNorm → MaxPool → Dropout(0.3)</td></tr>
+      <tr><td>Block 4</td><td>256</td><td>Conv2D → BatchNorm → MaxPool → Dropout(0.3)</td></tr>
+      <tr><td>Head</td><td>—</td><td>GlobalAvgPool → Dense(256) → BatchNorm → Dropout(0.5) → Softmax(4)</td></tr>
+    </tbody>
+  </table>
+  <p>Input size: <code>224 × 224 × 3</code>. Loss: <code>sparse_categorical_crossentropy</code>. Optimizer: <code>Adam (lr=0.001)</code>.</p>
+
+  <h2>Dataset</h2>
+  <p>Training data sourced from the <a href="https://plantvillage.psu.edu/" target="_blank">PlantVillage</a> public dataset (Penn State University). Four tomato-specific subsets were used, with an 80/20 train/validation split and data augmentation (rotation, flips, brightness, zoom).</p>
+
+  <h2>Technical Stack</h2>
+  <ul>
+    <li><strong>Backend:</strong> Python 3.8+, Django 4.x</li>
+    <li><strong>ML:</strong> TensorFlow 2.x / Keras, NumPy, Pillow</li>
+    <li><strong>Frontend:</strong> HTML5, CSS3, Vanilla JS (WebRTC for webcam)</li>
+    <li><strong>Training:</strong> Google Colab (free GPU)</li>
+  </ul>
+
+  <h2>Requirements (SRS Reference)</h2>
+  <ul>
+    <li>Classification accuracy ≥ 90% on 300-image held-out test set</li>
+    <li>Inference latency ≤ 50 ms per frame</li>
+    <li>Live mode ≥ 15 FPS</li>
+    <li>Model size ≤ 200 MB, memory usage ≤ 600 MB</li>
+    <li>Fully offline after setup — no internet required for inference</li>
+  </ul>
+
+  <h2>References</h2>
+  <ul>
+    <li>PlantVillage Dataset — <a href="https://plantvillage.psu.edu/" target="_blank">plantvillage.psu.edu</a></li>
+    <li>TensorFlow Documentation — <a href="https://www.tensorflow.org/" target="_blank">tensorflow.org</a></li>
+    <li>OpenCV Documentation — <a href="https://docs.opencv.org/" target="_blank">docs.opencv.org</a></li>
+    <li>IEEE Std 830-1998 — Software Requirements Specifications</li>
+  </ul>
+</main>
+<footer class="footer">
+  <p>LeafGuard AI · Science Fair Project · Prepared by <strong>Nhyira</strong> · February 2026</p>
+</footer>
+</body>
+</html>
